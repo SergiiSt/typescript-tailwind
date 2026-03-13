@@ -18,16 +18,25 @@ export default function LoginPage({
     navigate("/dashboard");
   }
 
-  //   console.log(isLoggedIn);
+  function Logout() {
+    setIsLoggedIn(false);
+    localStorage.setItem("isLoggedIn", "false");
+    navigate("/");
+  }
 
   return (
     <>
-      <h1 className="text-red-500">Login Page</h1>
+      <h1 className="text-5xl pt-8 py-8">Login Page</h1>
       {isLoggedIn ? (
-        <button>Logout</button>
+        <button
+          className="bg-blue-300 px-4 py-2 rounded hover:bg-blue-400"
+          onClick={Logout}
+        >
+          Logout
+        </button>
       ) : (
         <button
-          className="bg-red-600 text-blue-600 px-4 py-2 rounded hover:bg-red-700 hover:text-blue-700"
+          className=" bg-blue-300 px-4 py-2 rounded hover:bg-blue-400"
           onClick={Login}
         >
           Login
