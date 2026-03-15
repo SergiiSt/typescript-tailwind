@@ -1,73 +1,101 @@
-# React + TypeScript + Vite
+# Training project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains the training project for frontend.
+It includes a backend and frontend application, which are located in the `backend` and `frontend`
+directories, respectively.
 
-Currently, two official plugins are available:
+# Backend
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The backend application is built using NestJS, a progressive Node.js framework
+for building efficient and scalable server-side applications.
+It provides a robust set of features for building APIs,
+including support for TypeScript, dependency injection, and modular architecture.
 
-## React Compiler
+## Documentation
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+To find an api documentation start a dev server and open http://localhost:8000/api in your browser.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cd backend
+npm install
+npm run start:dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+# Task
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Connect frontend and backend applications.
+The frontend application should be able to fetch data from the backend and display it on the screen.
+Using [Tanstack Query](https://tanstack.com/query/latest)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
+## Examples
+
+### Get requests
+
+```tsx
+// src/App.tsx
+import {Route} from "react-router-dom";
+
+export default function App() {
+  const [queryClient] = useState(() => new QueryClient());
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Route path="/" element={<HomePage/>}/>
+    </QueryClientProvider>
+  );
+}
+```
+
+```tsx
+// src/hooks/useGetUser.tsx
+import {useQuery} from "@tanstack/react-query";
+import Cookies from "universal-cookie";
+
+import {User} from "@/types";
+
+async function fetchUser(): Promise<User> {
+  const cookie = new Cookies();
+
+  const response = await fetch("/api/auth/profile", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${cookie.get("auth_token")}`,
     },
-  },
-])
+  });
+
+  return await response.json();
+}
+
+export default function useGetUser() {
+  return useQuery({
+    queryKey: ["user"],
+    queryFn: fetchUser,
+  });
+}
+
+```
+
+```tsx
+// src/pages/HomePage.tsx
+import useGetUser from "@/hooks/useGetUser";
+
+export default function HomePage() {
+  const {data: user, isLoading, error} = useGetUser();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  return (
+    <div>
+      <h1>Welcome, {user.name}!</h1>
+    </div>
+  );
+}
+
 ```
