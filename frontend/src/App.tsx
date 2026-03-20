@@ -14,29 +14,31 @@ function App() {
 
   return (
     <>
-      <Routes>
-        <Route element={<Layout isLoggedIn={isLoggedIn} />}>
-          <Route path="/" element={<HomePage />} />
+      {
+        <Routes>
+          <Route element={<Layout isLoggedIn={isLoggedIn} />}>
+            <Route path="/" element={<HomePage />} />
 
-          <Route
-            path="/dashboard"
-            element={
-              <PrivatRoute isLoggedIn={isLoggedIn}>
-                <DashboardPage />
-              </PrivatRoute>
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              <LoginPage
-                setIsLoggedIn={setIsLoggedIn}
-                isLoggedIn={isLoggedIn}
-              />
-            }
-          />
-        </Route>
-      </Routes>
+            <Route
+              path="/dashboard"
+              element={
+                <PrivatRoute isLoggedIn={isLoggedIn}>
+                  <DashboardPage />
+                </PrivatRoute>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <LoginPage
+                  setIsLoggedIn={setIsLoggedIn}
+                  isLoggedIn={isLoggedIn}
+                />
+              }
+            />
+          </Route>
+        </Routes>
+      }
     </>
   );
 }
