@@ -1,8 +1,6 @@
 import HomeInfo from "../../components/HomeInfo/HomeInfo";
 import { useQuery } from "@tanstack/react-query";
 
-// import { User } from "@/types";
-
 type User = {
   id: number;
   username: string;
@@ -29,7 +27,7 @@ function useGetUser() {
 
 export default function HomePage() {
   const { data: user, isLoading, error } = useGetUser();
-  console.log(user);
+
   if (isLoading) {
     return <p>Loading...</p>;
   }
@@ -41,7 +39,9 @@ export default function HomePage() {
     <>
       <h1 className="text-5xl pt-8">Home page</h1>
       <HomeInfo />
-      {!user ? null : <p>Welcome, {user.username}!</p>}
+      {!user ? null : (
+        <p className="text-7xl mt-8">Welcome, {user.username}!</p>
+      )}
     </>
   );
 }
