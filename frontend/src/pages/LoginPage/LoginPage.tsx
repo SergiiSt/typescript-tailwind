@@ -40,7 +40,8 @@ export default function LoginPage({
   const mutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      console.log("success", data);
+      console.log("success", data.id);
+      localStorage.setItem("userId", data.id);
       navigate("/dashboard");
       setIsLoggedIn(true);
       localStorage.setItem("isLoggedIn", "true");
