@@ -1,16 +1,11 @@
 import { useNavigate } from "react-router-dom";
+import useLogin from "../../hooks/useLogin";
 
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
 
 type LoginPageProps = {
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   isLoggedIn: boolean;
-};
-
-type LoginData = {
-  username: string;
-  password: string;
 };
 
 export default function LoginPage({
@@ -20,46 +15,17 @@ export default function LoginPage({
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const navigate = useNavigate();
-
-  async function loginUser(data: LoginData) {
-    const response = await fetch("/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-      throw new Error("Login failed");
-    }
-
-    return response.json();
-  }
-
-  const mutation = useMutation({
-    mutationFn: loginUser,
-    onSuccess: (data) => {
-      console.log("success", data.id);
-      localStorage.setItem("userId", data.id);
-      navigate("/dashboard");
-      setIsLoggedIn(true);
-      localStorage.setItem("isLoggedIn", "true");
-    },
-    onError: (error) => {
-      console.error(error);
-    },
-  });
+  const loginMutation = useLogin({ setIsLoggedIn });
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    mutation.mutate({
+    loginMutation.mutate({
       username,
       password,
     });
   }
-
+  const navigate = useNavigate();
   function handleLogout() {
     setIsLoggedIn(false);
     localStorage.setItem("isLoggedIn", "false");
